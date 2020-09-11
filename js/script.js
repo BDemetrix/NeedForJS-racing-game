@@ -20,7 +20,7 @@ const setting = {
     start:  false,
     score:  0,
     speed:  3,
-    traffic: 2.5
+    traffic: 2.7
 };
 
 function getQuantityElements(heightElement) {
@@ -46,8 +46,8 @@ function startGame(event) {
         enemy.style.top = enemy.y + 'px';
         gameArea.appendChild(enemy);
         enemy.style.left = enemy.getRandomX(gameArea) + 'px';
-        //enemy.style.background = 'transparent url("../img/enemy1.png") center / cover no-repeat';
-        enemy.setBackground();
+        enemy.style.background = 'transparent url("./img/enemy1.png") center / cover no-repeat';
+        //enemy.setBackground();
     }
 
     setting.start = true;
@@ -111,6 +111,17 @@ function moveRoad(){
 function moveEnemy() {
     let enemys = document.querySelectorAll('.enemy');
     enemys.forEach(function (enemy) {
+        let carRect = car.getBoundingClientRect();
+        let enemyRect = enemy.getBoundingClientRect();
+        
+        if (carRect.top <= enemyRect.bottom && 
+            carRect.right >= enemyRect.left &&
+            carRect.left <= enemyRect.right &&
+            carRect.bottom >= enemyRect.top) {
+                setting.start = false;
+                console.warn('DTP');
+        }
+
         enemy.y += setting.speed/2;
         enemy.style.top = enemy.y + 'px';
         if (enemy.y >= document.documentElement.clientHeight) {
@@ -126,9 +137,8 @@ function getRandomX(gameArea) {
 }
 
 function setBackground() {
-    let bgImage = 'transparent url("../img/enemy';
-        bgImage +=  Math.floor(Math.random()*4);
+    let bgImage = 'transparent url("./img/enemy';
+        bgImage +=  Math.floor(Math.random()*11);
         bgImage += '.png") center / cover no-repeat';
-
     this.style.background = bgImage;
 }
