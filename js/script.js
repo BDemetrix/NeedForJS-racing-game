@@ -1,4 +1,4 @@
-const   score = document.querySelector('.score'),
+const score = document.querySelector('.game__score'),
         start = document.querySelector('.game__start'),
         gameArea = document.querySelector('.game__area'),
         car = document.createElement('div');
@@ -8,6 +8,7 @@ start.addEventListener('click', startGame);
 document.addEventListener('keydown', startRun);
 document.addEventListener('keyup', stopRun);
 const d = 100;
+
 
 const keys = {
     ArrowUp:    false,
@@ -20,7 +21,8 @@ const setting = {
     start:  false,
     score:  0,
     speed:  3,
-    traffic: 2.7
+    traffic: 3,
+    lives: 3
 };
 
 function getQuantityElements(heightElement) {
@@ -29,35 +31,40 @@ function getQuantityElements(heightElement) {
 }
 
 function startGame(event) {
-    start.classList.add('hide');
-    gameArea.textContent = '';
-    for (let i = 0; i < getQuantityElements(d); i++) {
-        const line = document.createElement('div');
-        line.classList.add('line');
-        line.style.top = (i * d) + 'px';
-        line.y = i * d;
-        gameArea.appendChild(line);
-    }
-    for (let i = 0; i < getQuantityElements(d * setting.traffic); i++) {
-        const enemy = document.createElement('div');
-        enemy.classList.add('enemy');
-        enemy.getRandomX = getRandomX;
-        enemy.setBackground = setBackground;
-        enemy.y = -d * setting.traffic * (i + 1);
-        enemy.style.top = enemy.y + 'px';
-        gameArea.appendChild(enemy);
-        enemy.style.left = enemy.getRandomX(gameArea) + 'px';
-        //enemy.style.background = 'transparent url("./img/enemy1.png") center / cover no-repeat';
-        enemy.setBackground();
-    }
+    if (setting.lives > 0) {
+        start.classList.add('hide');
+        score.classList.remove('hide');
+        score.innerHTML = getScoreHTML(setting);
+        gameArea.textContent = '';
 
-    setting.start = true;
-    gameArea.appendChild(car);
-    car.style.left = (gameArea.offsetWidth - car.offsetWidth) / 2 + 'px';
-    car.style.top = 'auto';
-    setting.x = car.offsetLeft;
-    setting.y = car.offsetTop;
-    requestAnimationFrame(playGame);
+        for (let i = 0; i < getQuantityElements(d); i++) {
+            const line = document.createElement('div');
+            line.classList.add('line');
+            line.style.top = (i * d) + 'px';
+            line.y = i * d;
+            gameArea.appendChild(line);
+        }
+        for (let i = 0; i < getQuantityElements(d * setting.traffic); i++) {
+            const enemy = document.createElement('div');
+            enemy.classList.add('enemy');
+            enemy.getRandomX = getRandomX;
+            enemy.setBackground = setBackground;
+            enemy.y = -d * setting.traffic * (i + 1);
+            enemy.style.top = enemy.y + 'px';
+            gameArea.appendChild(enemy);
+            enemy.style.left = enemy.getRandomX(gameArea) + 'px';
+            //enemy.style.background = 'transparent url("./img/enemy1.png") center / cover no-repeat';
+            enemy.setBackground();
+        }
+
+        setting.start = true;
+        gameArea.appendChild(car);
+        car.style.left = (gameArea.offsetWidth - car.offsetWidth) / 2 + 'px';
+        car.style.top = 'auto';
+        setting.x = car.offsetLeft;
+        setting.y = car.offsetTop;
+        requestAnimationFrame(playGame);
+    }
 }
 
 function playGame() {
@@ -94,8 +101,13 @@ function stopRun(event) {
     keys[event.key] = false;
 
     if (event.key === 'Escape') {
+        gameArea.textContent = '';
         setting.start = false;
+        setting.lives = 3;
+        setting.score = 0;
+        score.classList.add('hide');
         start.classList.remove('hide');
+        start.textContent = "Start";
     }
 
 }
@@ -120,7 +132,13 @@ function moveEnemy() {
         if (carRect.top <= enemyRect.bottom && carRect.right >= enemyRect.left && carRect.left <= enemyRect.right && carRect.bottom >= enemyRect.top) {
             setting.start = false;
             console.warn('DTP');
+            start.textContent = 'Continue';
             start.classList.remove('hide');
+            setting.lives--;
+            score.innerHTML = getScoreHTML(setting);
+            if (setting.lives < 1) {
+                start.innerHTML = 'GAME OVER! <br> press "Escape"';
+            }
         }
 
         enemy.y += setting.speed/2;
@@ -129,6 +147,8 @@ function moveEnemy() {
             enemy.y = -d * setting.traffic;
             enemy.style.left = enemy.getRandomX(gameArea) + 'px';
             enemy.setBackground();
+            setting.score += setting.speed;
+            score.innerHTML = getScoreHTML(setting);
         }
     });
 }    
@@ -142,4 +162,8 @@ function setBackground() {
         bgImage +=  Math.floor(Math.random()*11);
         bgImage += '.png") center / cover no-repeat';
     this.style.background = bgImage;
+}
+
+function getScoreHTML(setting) {
+    return 'lives: ' + setting.lives + '&nbsp;&nbsp;&nbsp;&nbsp; score: ' + setting.score;
 }
