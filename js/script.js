@@ -2,13 +2,13 @@ const score = document.querySelector('.game__score'),
         start = document.querySelector('.game__start'),
         gameArea = document.querySelector('.game__area'),
         car = document.createElement('div');
+
 car.classList.add('car');
 
 start.addEventListener('click', startGame);
 document.addEventListener('keydown', startRun);
 document.addEventListener('keyup', stopRun);
 const d = 100;
-
 
 const keys = {
     ArrowUp:    false,
@@ -17,16 +17,20 @@ const keys = {
     ArrowLeft:  false 
 };
 
-const setting = {
-    start:  false,
-    score:  0,
-    speed:  3,
-    traffic: 3,
-    lives: 3
-};
+let setting;
+function setSetting() {
+    setting = {
+        start: false,
+        score: 0,
+        speed: 3,
+        traffic: 3,
+        lives: 3
+    }    
+}
+setSetting();
 
 function getQuantityElements(heightElement) {
-    return document.documentElement.clientHeight / heightElement + 1;
+    return document.documentElement.clientHeight / heightElement;
     
 }
 
@@ -97,19 +101,10 @@ function startRun(event) {
 }
 
 function stopRun(event) {
-
     keys[event.key] = false;
-
     if (event.key === 'Escape') {
-        gameArea.textContent = '';
-        setting.start = false;
-        setting.lives = 3;
-        setting.score = 0;
-        score.classList.add('hide');
-        start.classList.remove('hide');
-        start.textContent = "Start";
+        escapeGame();
     }
-
 }
 
 function moveRoad(){
@@ -138,6 +133,12 @@ function moveEnemy() {
             score.innerHTML = getScoreHTML(setting);
             if (setting.lives < 1) {
                 start.innerHTML = 'GAME OVER! <br> press "Escape"';
+                const esc = document.createElement('div');
+                esc.classList.add('game__escape');
+                esc.textContent = 'Escape';
+                esc.addEventListener('click', escapeGame);
+                gameArea.appendChild(esc);
+
             }
         }
 
@@ -166,4 +167,12 @@ function setBackground() {
 
 function getScoreHTML(setting) {
     return 'lives: ' + setting.lives + '&nbsp;&nbsp;&nbsp;&nbsp; score: ' + setting.score;
+}
+
+function escapeGame() {
+    gameArea.textContent = '';
+    setSetting();
+    score.classList.add('hide');
+    start.classList.remove('hide');
+    start.textContent = "Start";
 }

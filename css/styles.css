@@ -76,6 +76,7 @@ html, body {
 
 .game {
     height: 100%;
+    position: relative;
 }
 
 .game--text {
@@ -108,4 +109,20 @@ html, body {
     height: 50px;
     background: #fff;
     left: 145px;
+}
+
+.game__escape {
+    width: 200px;
+    position: relative;
+    top: 30%;
+    background: #000;
+    border: 2px solid whitesmoke;
+    color: whitesmoke;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 30px;
+    text-align: center;
+    padding: 15px;
+    margin: auto;
+    z-index: 100;
 }
